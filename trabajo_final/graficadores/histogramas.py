@@ -72,3 +72,40 @@ def plot_pie(data, column, ax=None, startangle=90, palette='pastel', title=None)
     )
     ax.set_title(title if title else f'Distribución de "{column}"')
     ax.axis('equal')
+
+def plot_biplot(scores, loadings, feature_names, target_series=None):
+    plt.figure(figsize=(9, 7))
+    
+    # Graficar scores
+    if target_series is None:
+        plt.scatter(scores[:, 0], scores[:, 1], alpha=0.5, color="#008392")
+    else:
+        # Colorear por la variable objetivo
+        scatter = plt.scatter(scores[:, 0], scores[:, 1], c=target_series, cmap="coolwarm", alpha=0.5)
+        plt.colorbar(scatter, label="time_in_hospital")
+    
+    # Graficar vectores de loadings (escalados)
+    scale_factor = 3.0
+    for i, feature in enumerate(feature_names):
+        plt.arrow(
+            0, 0,
+            loadings.iloc[i, 0] * scale_factor,
+            loadings.iloc[i, 1] * scale_factor,
+            head_width=0.1,
+            color='black',
+            linewidth=1.5
+        )
+        plt.text(
+            loadings.iloc[i, 0] * (scale_factor + 0.3),
+            loadings.iloc[i, 1] * (scale_factor + 0.3),
+            feature,
+            color='black',
+            fontweight='bold',
+            fontsize=12
+        )
+        
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("Biplot PCA - Componentes principales de Diagnósticos")
+    plt.grid(True)
+    plt.show()
