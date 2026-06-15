@@ -143,3 +143,18 @@ def icd9_to_category(code):
             return 0
     except:
         return 0
+
+def get_cols(df):
+    selected = []
+    for col in ["diag_1",
+        "diag_3",
+        "diag_2",
+        "num_medications",
+        "num_lab_procedures",
+        "number_diagnoses",
+        "num_procedures",
+        "age"]:
+        for c in df.columns:
+            if col in c:
+                selected.append(c)
+    return selected
