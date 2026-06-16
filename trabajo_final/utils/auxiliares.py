@@ -4,6 +4,26 @@ import io
 from scipy.stats import f_oneway
 from scipy.stats import chi2_contingency
 
+class IQR():
+    def __init__(self, serie:pd.Series):
+        self.serie = serie
+        self.range = self.serie.quantile(0.75) - self.serie.quantile(0.25)
+        self.upper = self.serie.quantile(0.75) + 1.5 * self.range
+        self.lower = self.serie.quantile(0.25) - 1.5 * self.range
+
+    def filter_outliers(self) -> pd.Series:
+        return self.serie[self.serie.between(self.lower,self.upper)].copy()
+    
+    def get_outliers(self) -> pd.Series:
+        return self.serie[~self.serie.between(self.lower,self.upper)].copy()
+    
+    def get_outliers_proportion(self):
+        return round((self.get_outliers().size / self.serie.size) * 100,2)
+    
+    def get_ranges(self):
+        values = self.__dict__.copy()
+        del values["serie"]
+        return values
 
 def read_multi_csv(filepath: str) -> dict[str, pd.DataFrame]:
     dataframes = {}
@@ -143,3 +163,18 @@ def icd9_to_category(code):
             return 0
     except:
         return 0
+
+def get_cols(df):
+    selected = []
+    for col in ["diag_1",
+        "diag_3",
+        "diag_2",
+        "num_medications",
+        "num_lab_procedures",
+        "number_diagnoses",
+        "num_procedures",
+        "age"]:
+        for c in df.columns:
+            if col in c:
+                selected.append(c)
+    return selected
