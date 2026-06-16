@@ -4,6 +4,26 @@ import io
 from scipy.stats import f_oneway
 from scipy.stats import chi2_contingency
 
+class IQR():
+    def __init__(self, serie:pd.Series):
+        self.serie = serie
+        self.range = self.serie.quantile(0.75) - self.serie.quantile(0.25)
+        self.upper = self.serie.quantile(0.75) + 1.5 * self.range
+        self.lower = self.serie.quantile(0.25) - 1.5 * self.range
+
+    def filter_outliers(self) -> pd.Series:
+        return self.serie[self.serie.between(self.lower,self.upper)].copy()
+    
+    def get_outliers(self) -> pd.Series:
+        return self.serie[~self.serie.between(self.lower,self.upper)].copy()
+    
+    def get_outliers_proportion(self):
+        return round((self.get_outliers().size / self.serie.size) * 100,2)
+    
+    def get_ranges(self):
+        values = self.__dict__.copy()
+        del values["serie"]
+        return values
 
 def read_multi_csv(filepath: str) -> dict[str, pd.DataFrame]:
     dataframes = {}

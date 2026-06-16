@@ -109,3 +109,30 @@ def plot_biplot(scores, loadings, feature_names, target_series=None):
     plt.title("Biplot PCA - Componentes principales de Diagnósticos")
     plt.grid(True)
     plt.show()
+
+def plot_skewness(columns, X):
+    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    axes = axes.flatten()
+    for i, var in enumerate(columns):
+        ax = axes[i]
+        
+        skew = X[var].skew()
+        
+        sns.kdeplot(
+            X[var].dropna(),
+            ax=ax,
+            fill=True,
+            color='steelblue',
+            alpha=0.5,
+            linewidth=1.5
+        )
+        
+        ax.set_title(f'{var}\nskewness: {skew:.2f}', fontsize=10)
+        ax.set_xlabel('')
+        ax.set_ylabel('')
+
+    # Ocultar el subplot vacío (posición 8)
+    axes[-1].set_visible(False)
+
+    plt.tight_layout()
+    plt.show()
